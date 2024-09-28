@@ -5,12 +5,14 @@ import authService from "./appwrite/auth"
 import {login, logout} from "./store/authSlice"
 import { Footer, Header } from './components'
 import { Outlet } from 'react-router-dom'
+import Loading from './components/Loading'
 
 function App() {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()
 
   useEffect(() => {
+    setLoading(true);
     authService.getCurrentUser()
     .then((userData) => {
       if (userData) {
@@ -22,17 +24,22 @@ function App() {
     .finally(() => setLoading(false))
   }, [])
   
-  return !loading ? (
-    <div className='min-h-screen flex flex-wrap content-between bg-slate-100'>
-      <div className='w-full block'>
-        <Header />
-        <main>
-        <Outlet />
-        </main>
-        <Footer />
-      </div>
-    </div>
-  ) : null
+  if(loading){
+    return <Loading/>
+  }else{
+    return (
+        <div className='min-h-screen flex flex-col bg-slate-100'>
+          <div className='w-full block'>
+            <Header />
+            <main className='flex-1'>
+            <Outlet />
+            </main>
+            <Footer />
+          </div>
+        </div>
+    )
+  }
+  
 }
 
 export default App
